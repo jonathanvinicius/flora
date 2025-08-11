@@ -1,8 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { createHash } from 'crypto';
-import { RedisService } from './redis.service';
-import { PERSIST_CACHE } from '../cache.constants';
+import { RedisService } from '../redis.service';
+import { PERSIST_CACHE } from '../../cache.constants';
 
 const createCacheManagerMock = () => ({
   get: jest.fn(),

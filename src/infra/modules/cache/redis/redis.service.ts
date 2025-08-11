@@ -28,7 +28,7 @@ export class RedisService implements IRedisService {
   async hasCache(key: string): Promise<boolean> {
     try {
       const cacheData = await this.cacheManager.get(key);
-      return cacheData && cacheData != null;
+      return cacheData != null;
     } catch (error) {
       this.logger.error(`hasCache ${key} error: ${error.message}`);
       return false;
