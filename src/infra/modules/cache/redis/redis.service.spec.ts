@@ -1,35 +1,31 @@
-import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Test, TestingModule } from '@nestjs/testing';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { createHash } from 'crypto';
 import { RedisService } from './redis.service';
+import { PERSIST_CACHE } from '../cache.constants';
+
+const createCacheManagerMock = () => ({
+  get: jest.fn(),
+  set: jest.fn(),
+  del: jest.fn(),
+  clear: jest.fn(),
+  reset: jest.fn(),
+  store: { keys: jest.fn() },
+});
 
 describe('RedisService', () => {
   let service: RedisService;
-
-  const mockCacheManager = {
-    get: jest.fn<Promise<any>, [string]>(),
-    set: jest.fn<Promise<void>, [string, any, any]>(),
-    del: jest.fn<Promise<any>, [string]>(),
-    reset: jest.fn<Promise<void>, []>(),
-    store: {
-      keys: jest.fn<Promise<string[]>, []>(),
-    },
-  };
+  const mockCacheManager = createCacheManagerMock();
 
   beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
+    const moduleRef: TestingModule = await Test.createTestingModule({
       providers: [
         RedisService,
-        {
-          provide: CACHE_MANAGER,
-          useValue: mockCacheManager,
-        },
+        { provide: CACHE_MANAGER, useValue: mockCacheManager },
       ],
     }).compile();
 
-    service = module.get(RedisService);
-
-    // Limpar chamadas entre testes
+    service = moduleRef.get(RedisService);
     jest.clearAllMocks();
   });
 
@@ -38,113 +34,109 @@ describe('RedisService', () => {
   });
 
   describe('get', () => {
-    it('should return value from cache', async () => {
+    it('returns value from cache', async () => {
       mockCacheManager.get.mockResolvedValueOnce('value');
       const result = await service.get<string>('key');
       expect(result).toBe('value');
       expect(mockCacheManager.get).toHaveBeenCalledWith('key');
     });
 
-    it('should return null on error', async () => {
+    it('returns null on error', async () => {
       mockCacheManager.get.mockRejectedValueOnce(new Error('fail'));
-      const result = await service.get<string>('key');
-      expect(result).toBeNull();
-    });
-  });
-
-  describe('getStartsWith', () => {
-    it('should return values with matching prefix', async () => {
-      mockCacheManager.store.keys.mockResolvedValue([
-        'prefix:1',
-        'prefix:2',
-        'other',
-      ]);
-      mockCacheManager.get
-        .mockResolvedValueOnce('value1')
-        .mockResolvedValueOnce('value2');
-      const result = await service.getStartsWith<string>('prefix');
-      expect(result).toEqual(['value1', 'value2']);
-    });
-
-    it('should return null on error', async () => {
-      mockCacheManager.store.keys.mockRejectedValue(new Error('fail'));
-      const result = await service.getStartsWith<string>('prefix');
-      expect(result).toBeNull();
+      await expect(service.get<string>('key')).resolves.toBeNull();
     });
   });
 
   describe('hasCache', () => {
-    it('should return true if value exists', async () => {
+    it('returns true if value exists', async () => {
       mockCacheManager.get.mockResolvedValueOnce('data');
-      const result = await service.hasCache('key');
-      expect(result).toBe(true);
+      await expect(service.hasCache('key')).resolves.toBe(true);
     });
 
-    it('should return false if value is null', async () => {
+    it('returns false if value is null', async () => {
       mockCacheManager.get.mockResolvedValueOnce(null);
-      const result = await service.hasCache('key');
-      expect(result).toBe(false);
+      await expect(service.hasCache('key')).resolves.toBe(false);
     });
 
-    it('should return false on error', async () => {
-      mockCacheManager.get.mockRejectedValue(new Error('fail'));
-      const result = await service.hasCache('key');
-      expect(result).toBe(false);
+    it('returns false on error', async () => {
+      mockCacheManager.get.mockRejectedValueOnce(new Error('fail'));
+      await expect(service.hasCache('key')).resolves.toBe(false);
     });
   });
 
   describe('save', () => {
-    it('should save with default TTL (0)', async () => {
+    it('saves with default TTL (PERSIST_CACHE)', async () => {
       await service.save('key', 'data');
-      expect(mockCacheManager.set).toHaveBeenCalledWith('key', 'data', {
-        ttl: 0,
-      });
+      expect(mockCacheManager.set).toHaveBeenCalledWith(
+        'key',
+        'data',
+        PERSIST_CACHE,
+      );
     });
 
-    it('should save with custom TTL', async () => {
+    it('saves with custom TTL', async () => {
       await service.save('key', 'data', 100);
-      expect(mockCacheManager.set).toHaveBeenCalledWith('key', 'data', {
-        ttl: 100,
-      });
+      expect(mockCacheManager.set).toHaveBeenCalledWith('key', 'data', 100);
     });
 
-    it('should log error on failure', async () => {
+    it('swallows error, logs, and resolves', async () => {
       mockCacheManager.set.mockRejectedValueOnce(new Error('fail'));
       await expect(service.save('key', 'data')).resolves.toBeUndefined();
     });
   });
 
   describe('delete', () => {
-    it('should return true when deleted', async () => {
+    it('returns true when deleted (not undefined)', async () => {
       mockCacheManager.del.mockResolvedValueOnce(1);
-      const result = await service.delete('key');
-      expect(result).toBe(true);
+      await expect(service.delete('key')).resolves.toBe(true);
     });
 
-    it('should return false if deletion returns undefined', async () => {
+    it('returns false when deletion returns undefined', async () => {
       mockCacheManager.del.mockResolvedValueOnce(undefined);
-      const result = await service.delete('key');
-      expect(result).toBe(false);
+      await expect(service.delete('key')).resolves.toBe(false);
     });
 
-    it('should handle error gracefully', async () => {
+    it('swallows error and resolves', async () => {
       mockCacheManager.del.mockRejectedValueOnce(new Error('fail'));
       await expect(service.delete('key')).resolves.toBeUndefined();
     });
   });
 
   describe('clear', () => {
-    it('should call reset', async () => {
+    it('calls cacheManager.clear', async () => {
+      mockCacheManager.clear.mockResolvedValueOnce(undefined);
       await service.clear();
-      expect(mockCacheManager.reset).toHaveBeenCalled();
+      expect(mockCacheManager.clear).toHaveBeenCalledTimes(1);
     });
   });
 
   describe('createKey', () => {
-    it('should return sha256 hash', () => {
+    it('returns sha256 hash', () => {
       const input = 'test-key';
       const expected = createHash('sha256').update(input).digest('hex');
       expect(service.createKey(input)).toBe(expected);
+    });
+  });
+
+  describe('bumpVersion', () => {
+    it('when no version set: saves 2 with ttl 0', async () => {
+      mockCacheManager.get.mockResolvedValueOnce(undefined);
+      await service.bumpVersion('user_favorites:u1');
+      expect(mockCacheManager.set).toHaveBeenCalledWith(
+        'cache:ver:user_favorites:u1',
+        2,
+        0,
+      );
+    });
+
+    it('when version=5: saves 6 with ttl 0', async () => {
+      mockCacheManager.get.mockResolvedValueOnce(5);
+      await service.bumpVersion('user_favorites:u2');
+      expect(mockCacheManager.set).toHaveBeenCalledWith(
+        'cache:ver:user_favorites:u2',
+        6,
+        0,
+      );
     });
   });
 });

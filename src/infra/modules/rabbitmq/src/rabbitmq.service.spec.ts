@@ -1,5 +1,3 @@
-import { LogsServiceMock } from '@data/logs/__mocks__/logs.service.mock';
-import { ILogService } from '@data/logs/logs.service.interface';
 import { Test, TestingModule } from '@nestjs/testing';
 import { RabbitMqService } from './rabbitmq.service';
 import {
@@ -7,17 +5,14 @@ import {
   MockMessage,
   MockRmqContext,
 } from './__mocks__/rabbit-service.mock';
-import { AckErrors } from '@shared/types';
+import { AckErrors } from '@app/shared';
 
 describe('RabbitMqService', () => {
   let service: RabbitMqService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [
-        RabbitMqService,
-        { provide: ILogService, useClass: LogsServiceMock },
-      ],
+      providers: [RabbitMqService],
     }).compile();
 
     service = module.get(RabbitMqService);
