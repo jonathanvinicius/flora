@@ -23,7 +23,7 @@ describe('RabbitMqService', () => {
     jest.clearAllMocks();
   });
 
-  it('deve capturar e registrar error', async () => {
+  it('must capture and log error', async () => {
     const brokenContext = {
       getMessage: () => {
         throw new Error('getMessage failed');
@@ -45,7 +45,7 @@ describe('RabbitMqService', () => {
     expect(result).toBeUndefined();
   });
 
-  it('deve chamar ack e processar mensagem com carga payload válido', async () => {
+  it('must call ack and process message with valid payload', async () => {
     const handler = jest.fn().mockResolvedValue(undefined);
     const callback = jest.fn();
 
@@ -62,7 +62,7 @@ describe('RabbitMqService', () => {
     expect(MockChannel.ack).toHaveBeenCalledWith(MockMessage);
   });
 
-  it('deve confirmar a mensagem e ignorar quando o payload for nulo', async () => {
+  it('must confirm the message and ignore when the payload is null', async () => {
     await service.processMessage(
       MockRmqContext as any,
       null,
@@ -72,7 +72,7 @@ describe('RabbitMqService', () => {
 
     expect(MockChannel.ack).toHaveBeenCalledWith(MockMessage);
   });
-  it('deve registrar erro e lançar exceção', async () => {
+  it('should log error and throw exception', async () => {
     const handler = jest.fn().mockRejectedValue(new Error('handler failed'));
     const loggerErrorSpy = jest.spyOn(service['logger'], 'error');
 
@@ -90,7 +90,7 @@ describe('RabbitMqService', () => {
     );
   });
 
-  it('deve reenviar mensagem para a fila se o número de tentativas for menor que o limite', async () => {
+  it('must resend message to queue if number of attempts is less than limit', async () => {
     const retryParams = { retryLimit: 3 };
     await service.retryMessage(MockRmqContext as any, retryParams);
 
@@ -106,7 +106,7 @@ describe('RabbitMqService', () => {
     );
   });
 
-  it('deve mover a mensagem para a DLQ quando o número de tentativas exceder o limite', async () => {
+  it('must move the message to the DLQ when the number of attempts exceeds the limit', async () => {
     MockMessage.properties.headers['x-retries'] = 4;
 
     const retryParams = { retryLimit: 3 };
@@ -115,7 +115,7 @@ describe('RabbitMqService', () => {
     expect(MockChannel.nack).toHaveBeenCalledWith(MockMessage, false, false);
   });
 
-  it('deve confirmar a mensagem (ack) quando o erro for conhecido em AckErrors', async () => {
+  it('must acknowledge the message (ack) when the error is acknowledged in AckErrors', async () => {
     const error = new Error(AckErrors[0]);
     const result = service.handleError({
       context: MockRmqContext as any,
@@ -127,7 +127,7 @@ describe('RabbitMqService', () => {
     expect(result).toBe(error);
   });
 
-  it('deve rejeitar a mensagem (nack) e retornar true quando a operação for bem-sucedida', async () => {
+  it('must reject the message (nack) and return true when the operation is successful', async () => {
     const loggerLogSpy = jest.spyOn(service['logger'], 'log');
 
     const result = service.moveMessageToDLQ(MockRmqContext as any);
@@ -139,7 +139,7 @@ describe('RabbitMqService', () => {
     expect(result).toBe(true);
   });
 
-  it('deve registrar erro e retornar false se ocorrer falha ao mover a mensagem para DLQ', async () => {
+  it('should log error and return false if moving the message to DLQ fails', async () => {
     const brokenContext = {
       getMessage: () => {
         throw new Error('broken context');
