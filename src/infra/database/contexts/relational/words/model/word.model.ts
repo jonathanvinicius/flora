@@ -15,22 +15,23 @@ export class WordModel extends BaseModel {
   name: string;
 
   @Column({
-    type: DataType.JSONB,
+    type: DataType.JSON,
     allowNull: true,
   })
   phonetics: JSON;
 
   @Column({
-    type: DataType.JSONB,
+    type: DataType.JSON,
     allowNull: true,
   })
   meanings: JSON;
 
   @Column({
-    type: DataType.ARRAY(DataType.STRING),
+    type: DataType.JSON,
     allowNull: true,
   })
   sourceUrls: string[];
+
   @Column({
     type: DataType.BOOLEAN,
     allowNull: false,
