@@ -1,0 +1,12 @@
+# from build
+dist
+node_modules
+*.md
+.env.example
+pipelines
+.sh
+.tmp
+.vscode
+.docker_volumes
+.docker_ignore
+bitbucket-pipelines.yml

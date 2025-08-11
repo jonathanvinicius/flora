@@ -1,0 +1,98 @@
+version: '3.8'
+
+services:
+
+  api:
+    container_name: api-flora-dictionary
+    build:
+      context: .
+      dockerfile: Dockerfile.local
+    restart: unless-stopped
+    command: >
+      sh -c "npm install && 
+              npx sequelize-cli db:migrate && 
+              npx sequelize-cli db:seed:all && 
+              ${DEBUG:-npm run start:dev}"
+    # To enable debugging, set DEBUG in .env to: npm run start:debug:docker
+    env_file:
+      - .env
+    ports:
+      - '3000:3000' # host:container
+      - '${DEBUG_PORT:-9229}:9229' # debug port
+    environment:
+      TZ: America/Sao_Paulo
+      NODE_ENV: development
+      DB_HOST: postgres
+    volumes:
+      - ./:/app # Mount source code for hot reloading
+      - /app/node_modules # Preserve container node_modules
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - api_network
+
+  postgres:
+    container_name: postgres
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
+      POSTGRES_DB: ${DB_NAME:-api_template_db}
+    restart: unless-stopped
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-postgres} -d ${DB_NAME:-api_template_db}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - api_network
+
+  rabbitmq:
+    image: rabbitmq:4.1.0-management
+    container_name: rabbitmq
+    ports:
+      - "${RABBITMQ_PORT:-5672}:5672"
+      - "${RABBITMQ_PAINEL_PORT:-15672}:15672"
+    env_file:
+      - .env
+    environment:
+      RABBITMQ_DEFAULT_USER: "${RABBITMQ_USERNAME:-guest}"
+      RABBITMQ_DEFAULT_PASS: "${RABBITMQ_PASSWORD:-guest}"
+      RABBITMQ_DEFAULT_VHOST: "${RABBITMQ_VIRTUAL_HOST:-/}"
+    volumes:
+      - rabbitmq:/var/lib/rabbitmq
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - api_network
+  redis:
+    image: redis:7-alpine
+    container_name: redis-flora
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes
+    networks:
+      - api_network
+
+
+
+networks:
+  api_network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  dynamodb_data:
+  rabbitmq:
+  redis_data:
+
