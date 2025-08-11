@@ -60,7 +60,7 @@ describe('GetWordDefinitionsUseCase', () => {
     expect(result).toBeTruthy();
     expect(result.name).toBeDefined();
     expect(rabbitMock.emitMessage).toHaveBeenCalledWith(
-      expect.objectContaining({ word: 'Hungry', userId: 'user-1' }),
+      expect.objectContaining({ name: 'Hungry', userId: 'user-1' }),
     );
     expect(dictionaryApiMock.getDefinitionWord).not.toHaveBeenCalled();
   });
@@ -78,7 +78,7 @@ describe('GetWordDefinitionsUseCase', () => {
     expect(result).toEqual(api);
     expect(rabbitMock.emitMessage).toHaveBeenCalledWith(
       expect.objectContaining({
-        word: 'banana',
+        name: 'banana',
         userId: 'user-2',
         definitionWord: api,
       }),
