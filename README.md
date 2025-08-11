@@ -1,4 +1,4 @@
-# Challenge Info
+# Challenge Flora
 
 Configurar envs locais para funcionamento do projeto arquivo .env.example raiz do projeto.
 
@@ -12,15 +12,15 @@ Configurar envs locais para funcionamento do projeto arquivo .env.example raiz d
 
    ```bash
    git clone https://github.com/jonathanvinicius/flora
-
    ```
+
 
 2. Execute o container da aplicação
-
+  
    ```bash
    docker compose up -d
-
    ```
+ Ao iniciar o container ele vai rodar as migrations, e o script que popula as palavras.
 
 3. Importar a collection do postman disponibilizada no diretório collection
 
@@ -28,6 +28,7 @@ Configurar envs locais para funcionamento do projeto arquivo .env.example raiz d
 
 - **Backend:** Node.js, NestJS, TypeScript
 - **Banco de Dados:** Postgres
+- **Testes:** Jest
 - **Cache:** Redis
 - **ORM:** Sequelize
 - **Message Broker:** RabbitMQ
