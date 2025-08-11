@@ -2,7 +2,10 @@ import { Injectable } from '@nestjs/common';
 import { IDictionaryApiService } from './dictionary-api.service.interface';
 import { GetWordDefinitionsDto } from './dtos';
 import { GetWordDefinitionsUseCase } from './usecases';
-import { DictionaryEntry } from './responses/get-definition-word.response';
+import {
+  DictionaryEntry,
+  DictionaryEntryMapper,
+} from './responses/get-definition-word.response';
 
 @Injectable()
 export class DictionaryApiService implements IDictionaryApiService {
@@ -12,7 +15,7 @@ export class DictionaryApiService implements IDictionaryApiService {
 
   async getDefinitionWord(
     params: GetWordDefinitionsDto,
-  ): Promise<DictionaryEntry> {
+  ): Promise<DictionaryEntryMapper> {
     return this.getWordDefinitionWordUseCase.execute(params);
   }
 }

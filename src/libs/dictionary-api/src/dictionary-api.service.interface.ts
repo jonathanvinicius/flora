@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { GetWordDefinitionsDto } from './dtos';
-import { DictionaryEntry } from './responses/get-definition-word.response';
+import { DictionaryEntryMapper } from './responses/get-definition-word.response';
 
 @Injectable()
 export abstract class IDictionaryApiService {
@@ -9,5 +9,5 @@ export abstract class IDictionaryApiService {
    */
   abstract getDefinitionWord(
     params: GetWordDefinitionsDto,
-  ): Promise<DictionaryEntry>;
+  ): Promise<DictionaryEntryMapper>;
 }

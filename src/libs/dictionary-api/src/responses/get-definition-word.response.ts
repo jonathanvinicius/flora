@@ -32,4 +32,12 @@ export interface DictionaryEntry {
   sourceUrls?: string[];
 }
 
+export interface DictionaryEntryMapper {
+  name: string;
+  phonetics: Phonetic[];
+  meanings: Meaning[];
+  license?: License;
+  sourceUrls?: string[];
+}
+
 export type GetDefinitionWordResponse = DictionaryEntry[];

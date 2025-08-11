@@ -10,6 +10,7 @@ import {
 import { GetWordDefinitionsDto } from '../dtos';
 import {
   DictionaryEntry,
+  DictionaryEntryMapper,
   GetDefinitionWordResponse,
 } from '../responses/get-definition-word.response';
 
@@ -17,7 +18,19 @@ import {
 export class GetWordDefinitionsUseCase implements IUsecase {
   constructor(private readonly api: ApiClientService) {}
 
-  async execute(params: GetWordDefinitionsDto): Promise<DictionaryEntry> {
+  private mapApiToUsecase(entry: DictionaryEntry): DictionaryEntryMapper {
+    const {
+      word,
+      meanings = [],
+      phonetics = [],
+      license = null,
+      sourceUrls = [],
+    } = entry;
+
+    return { name: word, meanings, phonetics, license, sourceUrls };
+  }
+
+  async execute(params: GetWordDefinitionsDto): Promise<DictionaryEntryMapper> {
     try {
       const { data } = await this.api.get<GetDefinitionWordResponse>(
         `entries/en/${params.word}`,
@@ -30,22 +43,7 @@ export class GetWordDefinitionsUseCase implements IUsecase {
           errorDefinition: ErrorDefinitions.NOT_FOUND,
         });
       }
-
-      const {
-        word,
-        meanings = [],
-        phonetics = [],
-        license = null,
-        sourceUrls = [],
-      } = first;
-
-      return {
-        word,
-        meanings,
-        phonetics,
-        license,
-        sourceUrls,
-      };
+      return this.mapApiToUsecase(first);
     } catch (error) {
       if (error.response?.status === HttpStatus.NOT_FOUND) {
         throw new NotFoundException({
