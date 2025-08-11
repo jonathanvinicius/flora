@@ -44,14 +44,50 @@ Escolhi o NestJs como framework da API devido a diversos benefícios, tais como:
 
 **Arquitetura modular e escalável**:
 Facilita a divisão do projeto em módulos, permitindo uma manutenção mais organizada e uma escalabilidade natural conforme o sistema cresce. <br>
-**Suporte nativo para testes**:
-Integrado ao Jest, agiliza a criação e execução de testes unitários e de integração.<br>
 **Documentação automática**:
 Gera documentação interativa (Swagger) de forma nativa, facilitando o desenvolvimento e a comunicação entre equipes e consumidores da API.<br>
 **Injeção de dependências robusta**:
 Melhora a testabilidade e a flexibilidade da aplicação.
 Forte tipagem e uso de TypeScript:
 Proporciona maior segurança e consistência no desenvolvimento.
+## 🧪 Suporte nativo a testes
+
+O projeto conta com integração nativa ao **Jest**, facilitando a criação e execução de testes unitários e de integração.
+
+### Factories de dados persistidos (SQLite em memória)
+Durante os testes, utilizei *factories* que criam dados reais em tempo de execução usando um banco SQLite em memória.  
+Isso garante rapidez, isolamento e reprodutibilidade dos testes.
+
+**Principais factories:**
+- `createUserResponse()` – Cria um usuário fake.
+- `createWordResponse()` – Cria uma palavra fake.
+- `createUserFavorite()` – Cria o vínculo *usuário ↔ palavra favorita*.  
+  Aceita:
+  - `overrides` *(parciais de atributos para sobrescrever valores)*
+  - `bulk` *(criação em lote)*
+  - `quantity` *(quantidade de registros no modo bulk)*
+
+**Exemplo de uso:**
+```ts
+import { createUserFavorite } from '.../user-favorite-word.factory';
+
+it('deve criar um favorito de palavra', async () => {
+  const favorite = await createUserFavorite();
+  expect(favorite).toBeDefined();
+});
+```
+
+
+
+## 🌐 Mensagens de erro com multilíngue
+**Suporte a mensagens de erros com multilaguage**: A API suporta tradução de erros (Português e Inglês).
+Basta enviar o header HTTP Accept-Language:
+
+Accept-Language: pt → Português (padrão)
+
+Accept-Language: en → Inglês.
+
+
 
 ## Banco de dados
 
