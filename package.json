@@ -24,8 +24,7 @@
     "seed:generate": "npx sequelize-cli seed:generate --name",
     "seed:run": "npx sequelize-cli db:seed:all",
     "seed:revert": "npx sequelize-cli db:seed:undo",
-    "seed:revert:all": "npx sequelize-cli db:seed:undo:all",
-    "prepare": "husky install"
+    "seed:revert:all": "npx sequelize-cli db:seed:undo:all"
   },
   "repository": {
     "type": "git",
@@ -62,21 +61,25 @@
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.2",
     "express": "^5.1.0",
-    "jest": "^30.0.5",
+
     "jwt-decode": "^4.0.0",
     "keyv": "^5.5.0",
     "nestjs-i18n": "^10.5.1",
     "passport-jwt": "^4.0.1",
     "pg": "^8.16.3",
     "redis": "^5.8.0",
-    "sequelize": "^6.37.7"
+    "sequelize": "^6.37.7",
+    "sqlite3": "^5.1.7"
   },
   "devDependencies": {
     "@types/amqplib": "^0.10.7",
     "@types/bcrypt": "^6.0.0",
+    "@types/jest": "^30.0.0",
     "@types/node": "^24.2.0",
     "@types/passport-jwt": "^4.0.1",
     "i": "^0.3.7",
-    "npm": "^11.5.2"
+    "jest": "^30.0.5",
+    "npm": "^11.5.2",
+    "ts-jest": "^29.4.1"
   }
 }
