@@ -11,6 +11,7 @@ module.exports = {
           primaryKey: true,
           unique: true,
           allowNull: false,
+          defaultValue: Sequelize.literal('uuid_generate_v4()'),
         },
         user_id: {
           type: Sequelize.UUID,

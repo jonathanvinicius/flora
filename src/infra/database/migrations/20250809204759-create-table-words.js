@@ -11,6 +11,7 @@ module.exports = {
           primaryKey: true,
           unique: true,
           allowNull: false,
+          defaultValue: Sequelize.literal('uuid_generate_v4()'),
         },
         language: {
           type: Sequelize.STRING(10),
@@ -26,14 +27,13 @@ module.exports = {
           allowNull: true,
         },
         meanings: {
-          type: Sequelize.JSONB,
+          type: Sequelize.JSON,
           allowNull: true,
         },
         source_urls: {
-          type: Sequelize.ARRAY(Sequelize.TEXT),
+          type: Sequelize.JSON,
           allowNull: true,
         },
-        source: { type: Sequelize.BOOLEAN, allowNull: true },
         is_completed: { type: Sequelize.BOOLEAN, defaultValue: false },
         created_at: {
           type: Sequelize.DATE,

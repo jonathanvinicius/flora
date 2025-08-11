@@ -3,6 +3,9 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
+    await queryInterface.sequelize.query(
+      'CREATE EXTENSION IF NOT EXISTS "uuid-ossp";',
+    );
     await queryInterface.createTable(
       { schema: 'flora', tableName: 'users' },
       {
@@ -11,6 +14,7 @@ module.exports = {
           primaryKey: true,
           unique: true,
           allowNull: false,
+          defaultValue: Sequelize.literal('uuid_generate_v4()'),
         },
         name: {
           type: Sequelize.STRING,
