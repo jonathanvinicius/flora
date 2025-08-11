@@ -97,7 +97,7 @@ export class MeaningDto {
 export class GetWordDefinitionsResponse {
   @ApiProperty({ example: 'hello' })
   @IsString()
-  word: string;
+  name: string;
 
   @ApiProperty({ type: [MeaningDto] })
   @IsArray()

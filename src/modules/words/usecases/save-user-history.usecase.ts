@@ -24,23 +24,23 @@ export class SaveUserHistoryUseCase implements IUsecase {
     await this.redisService.bumpVersion(
       `${CachePrefix.USER_HISTORY}${params.userId}`,
     );
-    
+
     const userSearchHistory = await this.userSearchHistoryRepository.findOne({
       where: {
         userId: params.userId,
-        word: params.word,
+        word: params.name,
       },
     });
 
     if (!userSearchHistory) {
       await this.userSearchHistoryRepository.create({
-        word: params.word,
+        word: params.name,
         userId: params.userId,
       });
     }
 
     const word = await this.wordRepository.findOne({
-      where: { name: params.word },
+      where: { name: params.name },
       attributes: ['id'],
     });
 

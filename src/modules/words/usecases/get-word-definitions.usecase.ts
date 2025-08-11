@@ -1,16 +1,10 @@
-import {
-  IUsecase,
-  IUserSearchHistoryRepository,
-  IUSER_SEARCH_HISTORY_REPOSITORY,
-  IWordRepository,
-  IWORD_REPOSITORY,
-} from '@app/domain';
+import { IUsecase, IWordRepository, IWORD_REPOSITORY } from '@app/domain';
 import { Inject, Injectable } from '@nestjs/common';
 import { GetWordDefinitionsDto } from '../dtos';
 import { IDictionaryApiService } from '@app/libs/dictionary-api/src/dictionary-api.service.interface';
 import { IRabbitMqWordUserHistoryService } from '@app/infra/modules/rabbitmq/src/services/word-user-history';
 import { GetWordDefinitionsResponse } from '../responses';
-import { DictionaryEntry } from '@app/libs/dictionary-api/src/responses/get-definition-word.response';
+import { DictionaryEntryMapper } from '@app/libs/dictionary-api/src/responses/get-definition-word.response';
 
 @Injectable()
 export class GetWordDefinitionsUseCase implements IUsecase {
@@ -39,7 +33,7 @@ export class GetWordDefinitionsUseCase implements IUsecase {
       params,
     );
 
-    await this.registerUserHistory(dictionary.word, userId, dictionary);
+    await this.registerUserHistory(dictionary.name, userId, dictionary);
 
     return dictionary;
   }
@@ -47,7 +41,7 @@ export class GetWordDefinitionsUseCase implements IUsecase {
   private async registerUserHistory(
     word: string,
     userId: string,
-    definitionWord?: DictionaryEntry,
+    definitionWord?: DictionaryEntryMapper,
   ): Promise<void> {
     await this.rabbitMqWordUserHistory.emitMessage({
       word,

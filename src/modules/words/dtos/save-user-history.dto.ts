@@ -4,7 +4,7 @@ import { IsDefined, IsOptional, IsString } from 'class-validator';
 export class SaveUserHistoryDto {
   @IsDefined()
   @IsString()
-  word: string;
+  name: string;
 
   @IsDefined()
   @IsString()
@@ -13,5 +13,5 @@ export class SaveUserHistoryDto {
   @IsDefined()
   @IsString()
   @IsOptional()
-  definitionWord: DictionaryEntry;
+  definitionWord?: DictionaryEntry;
 }

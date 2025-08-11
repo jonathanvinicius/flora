@@ -5,12 +5,7 @@ import {
   IWORD_REPOSITORY,
   IWordRepository,
 } from '@app/domain';
-import {
-  Inject,
-  Injectable,
-  NotFoundException,
-  UnprocessableEntityException,
-} from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { DeleteUserFavoriteDto } from '../dtos';
 import { IRabbitMqUserFavoriteWord } from '@app/infra/modules/rabbitmq/src/services/user-favorite-words';
 import { ErrorDefinitions } from '@app/domain/errors';
