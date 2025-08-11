@@ -121,15 +121,12 @@ export class RabbitMqService implements IRabbitMqService {
         this.logger.log(
           `[AMQP] [${retries}] Retry ${retries} message ${queue}=>${pattern}`,
         );
-        // Requeue message with updated headers
-        // channel.nack(message, false, true);
 
         // Acknowledge successful processing
         channel.ack(message);
 
         // resend message with headers
         channel.sendToQueue(queue, message.content, messageOptions);
-        // channel.publish('', pattern,message.content,messageOptions );
       }
     } catch (error) {
       this.logger.error(`retryMessage: Error: ${error.message}`);

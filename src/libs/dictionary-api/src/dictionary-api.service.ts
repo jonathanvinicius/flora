@@ -2,10 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { IDictionaryApiService } from './dictionary-api.service.interface';
 import { GetWordDefinitionsDto } from './dtos';
 import { GetWordDefinitionsUseCase } from './usecases';
-import {
-  DictionaryEntry,
-  DictionaryEntryMapper,
-} from './responses/get-definition-word.response';
+import { DictionaryEntryMapper } from './responses/get-definition-word.response';
 
 @Injectable()
 export class DictionaryApiService implements IDictionaryApiService {

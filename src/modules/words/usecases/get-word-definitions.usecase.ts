@@ -39,12 +39,12 @@ export class GetWordDefinitionsUseCase implements IUsecase {
   }
 
   private async registerUserHistory(
-    word: string,
+    name: string,
     userId: string,
     definitionWord?: DictionaryEntryMapper,
   ): Promise<void> {
     await this.rabbitMqWordUserHistory.emitMessage({
-      word,
+      name,
       userId,
       definitionWord,
     });
