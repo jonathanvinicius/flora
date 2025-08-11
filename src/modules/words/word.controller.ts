@@ -31,13 +31,14 @@ import { Ctx, EventPattern, Payload, RmqContext } from '@nestjs/microservices';
 import { SAVE_WORD_USER_HISTORY_PATTERN } from '@app/infra/modules/rabbitmq/src/services/word-user-history';
 import { IRabbitMqService } from '@app/infra/modules/rabbitmq/src';
 import { CacheInterceptor } from '../../infra/interceptors/cache.interceptor';
-import { CacheTTL, IRedisService } from '@app/infra/modules/cache';
-import { PageOptionsDto } from '@app/shared/dtos';
+import { CacheTTL } from '@app/infra/modules/cache';
+import { PageDto } from '@app/shared/dtos';
 import {
   SAVE_USER_FAVORITE_WORD_PATTERN,
   SAVE_USER_UNFAVORITE_WORD_PATTERN,
 } from '@app/infra/modules/rabbitmq/src/services/user-favorite-words';
 import {
+  GetWordsDto,
   PostUserFavoriteDto,
   SaveUserFavoriteWordDto,
   SaveUserHistoryDto,
@@ -103,7 +104,9 @@ export class WordsController {
   @UseInterceptors(CacheInterceptor)
   @CacheTTL(300000)
   @Get('entries/en')
-  async getWords(@Query() params: PageOptionsDto): Promise<any> {
+  async getWords(
+    @Query() params: GetWordsDto,
+  ): Promise<PageDto<GetWordsResponse>> {
     return this.service.getWords(params);
   }
 

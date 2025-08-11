@@ -14,7 +14,10 @@ import { IWordService } from './word.service.interface';
 import { WordService } from './word.service';
 import { WordsController } from './word.controller';
 import { RabbitMqModule } from '@app/infra/modules/rabbitmq/src';
-import { UserSearchHistoryDataModule } from '@app/infra/database/contexts';
+import {
+  UserDataModule,
+  UserSearchHistoryDataModule,
+} from '@app/infra/database/contexts';
 import { WordDataModule } from '@app/infra/database/contexts/relational/words';
 import { UserFavoriteWordsDataModule } from '@app/infra/database/contexts/relational/user-favorite-words';
 
@@ -26,6 +29,7 @@ import { UserFavoriteWordsDataModule } from '@app/infra/database/contexts/relati
     UserSearchHistoryDataModule,
     WordDataModule,
     UserFavoriteWordsDataModule,
+    UserDataModule,
   ],
   providers: [
     { provide: IWordService, useClass: WordService },

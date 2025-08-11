@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import {
   DeleteUserFavoriteDto,
   GetWordDefinitionsDto,
+  GetWordsDto,
   PostUserFavoriteDto,
   SaveUserFavoriteWordDto,
   SaveUserHistoryDto,
@@ -53,7 +54,7 @@ export class WordService implements IWordService {
     await this.saveUserHistoryUseCase.execute(params);
   }
 
-  async getWords(params: PageOptionsDto): Promise<PageDto<GetWordsResponse>> {
+  async getWords(params: GetWordsDto): Promise<PageDto<GetWordsResponse>> {
     return this.getWordsUseCase.execute(params);
   }
 
